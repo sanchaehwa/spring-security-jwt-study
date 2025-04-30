@@ -45,8 +45,7 @@ GET /api/users
 Authorization: Bearer <JWT_TOKEN>
 
 ```
-
-1. 서버는 `JwtAuthenticationFilter`에서 토큰 검증 후, `SecurityContext`에 인증 정보 저장 → 인증된 사용자 처리
+5. 서버는 `JwtAuthenticationFilter`에서 토큰 검증 후, `SecurityContext`에 인증 정보 저장 → 인증된 사용자 처리
 
 ```
 현재 실습에서는 Access Token과 Refresh Token을 분리하지 않고, 단일 JWT 토큰만으로 인증을 처리하였고
