@@ -22,6 +22,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
 
+    private final JWTUtil jwtUtil;
+
 
 
     @Override
@@ -43,10 +45,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         // 로그인에 성공한 사용자 정보를 활용해서
         String username = customUserDetails.getUsername();
+
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities(); // 권한 목록 가져오기
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator(); // 반복자 생성
         GrantedAuthority auth = iterator.next(); // 첫 번째 권한 가져오기
-        String role = auth.getAuthority(); // 권한 이름 추출
+        String role = auth.getAuthority();//권한 추출
+
+        //JWT 생성
+        long tenHoursMs = 10 * 60 * 60 * 1000L;
+        String token = jwtUtil.createJwt(username, role, tenHoursMs);  //토큰 발급 *60*60&10L : 토큰 유효시간 18시간
+
+        response.addHeader("Authorization", "Bearer " + token);
+
+
 
     }
 
