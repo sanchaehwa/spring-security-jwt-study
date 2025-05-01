@@ -1,7 +1,7 @@
 ## 2025 Spring🍃 Security JWT study
 
 ### 진행 날짜
-25.04.  ~  
+25.04.  ~  05.01
 
 ### Spring Security JWT 실습 환경 
 - Java: 17
