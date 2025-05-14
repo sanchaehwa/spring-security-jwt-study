@@ -1,7 +1,7 @@
 ## 2025 Spring🍃 Security Advanced JWT study
 
 ### 진행 날짜
-25.05.05  ~  
+25.05.05  ~ 05.14
 
 ### 진행 내용
 
@@ -23,8 +23,8 @@
 > 스터디에서는 보안을 강화하기 위해, Access Token + Refresh Token을 활용한 다중 토큰 방식적용. Redis(In-Memory 저장소)를 사용하여 Refresh Token 관리
 
 #### 다중 토큰 JWT 흐름 (Redis 사용)
+![흐름도](https://github.com/user-attachments/assets/b6700d21-08cd-4cb4-9121-c6a08309cf70)
 
-![흐름도](https://github.com/user-attachments/assets/4a62a499-9d87-4a82-a69f-7bc9675024c2)
 
 
 ### Spring Security JWT 심화 실습 환경 
