@@ -47,11 +47,16 @@ public class JWTUtil {
                 .getExpiration() //토큰 만료 날짜를 가지고옴
                 .before(new Date());
     }
+    //Access Token인지, Refresh Token 인지
+    public String getCategory(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
+    }
 
     //사용자 이름, 역할 및 만료 시간을 기준으로 JWT 생성
-    public String createJwt(String username, String role, Long expiredMs) {
+    public String createJwt(String category,String username, String role, Long expiredMs) {
         return Jwts.builder()
                 //claim() 데이터 추가 JWT 페이로드
+                .claim("category", category)
                 .claim("username", username)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))

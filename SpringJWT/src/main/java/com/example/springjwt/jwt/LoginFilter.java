@@ -4,10 +4,12 @@ import com.example.springjwt.dto.CustomUserDetails;
 import com.example.springjwt.global.error.ErrorCode;
 import com.example.springjwt.global.error.exception.NotFoundUserException;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.*;
@@ -21,7 +23,6 @@ import java.util.Iterator;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-
     private final JWTUtil jwtUtil;
 
 
@@ -31,8 +32,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //클라이언트 요청에서 사용자 Username , Password 추출
         String username = obtainUsername(request);
         String password = obtainPassword(request);
-
-
         //Authentication Manager 가 검증을 할 수 있도록 값을 토큰에 담아 넘겨줌
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password,null);
 
@@ -41,6 +40,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 성공  - JWT 발급
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+        //유저 정보
+        String username = authentication.getName();
+
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
+        String role = auth.getAuthority();
+
+        //토큰 생성
+        String access = jwtUtil.createJwt("access", username, role, 600000L); //10분 만료시간
+        String refresh = jwtUtil.createJwt("refresh", username, role, 1800000L); //30분 만료시간
+
+        //access token 저장: 클라이언트 측.
+        response.setHeader("access",access);
+        response.addCookie(createCookie("refresh",refresh));
+        response.setStatus(HttpStatus.OK.value());
+
 
     }
 
@@ -48,5 +64,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         response.setStatus(401);
+    }
+
+    //쿠키 생성
+    private Cookie createCookie(String key, String value) {
+        Cookie cookie = new Cookie(key, value);
+        //쿠키의 유효기간 설정
+        cookie.setMaxAge(24*60*60);
+        //XSS 공격으로부터 쿠키 보호(JS 으로 접근 불가능)
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 }
