@@ -22,6 +22,7 @@ public class SecurityConfig {
     //AuthenticationManager가 인자로 받을
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final RedisUtil redisUtil;
 
 
 
@@ -68,7 +69,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         //로그인 필터 추가
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil,redisUtil), UsernamePasswordAuthenticationFilter.class);
 
 
         //세션 설정
